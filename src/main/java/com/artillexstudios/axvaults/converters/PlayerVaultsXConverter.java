@@ -30,7 +30,6 @@ public class PlayerVaultsXConverter {
                     continue;
                 }
                 players++;
-
                 VaultManager.getPlayer(Bukkit.getOfflinePlayer(uuid)).thenAccept(vaultPlayer -> {
                     for (String route : data.getBackingDocument().getRoutesAsStrings(false)) {
                         final int num = Integer.parseInt(route.replace("vault", ""));
