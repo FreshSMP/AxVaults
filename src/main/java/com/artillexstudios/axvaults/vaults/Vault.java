@@ -52,6 +52,7 @@ public class Vault implements InventoryHolder {
             }
             Player player = Bukkit.getPlayer(vaultPlayer.getUUID());
             for (int i = storage.getSize(); i < items.length; i++) {
+                if (items[i] == null) continue;
                 HashMap<Integer, ItemStack> remaining = storage.addItem(items[i]);
                 if (player != null) {
                     Scheduler.get().runAt(player.getLocation(), () -> {
