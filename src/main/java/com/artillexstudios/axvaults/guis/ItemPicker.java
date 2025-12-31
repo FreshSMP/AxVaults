@@ -2,6 +2,7 @@ package com.artillexstudios.axvaults.guis;
 
 import com.artillexstudios.axapi.libs.boostedyaml.block.implementation.Section;
 import com.artillexstudios.axapi.reflection.ClassUtils;
+import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.ItemBuilder;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axvaults.utils.SoundUtils;
@@ -98,6 +99,6 @@ public class ItemPicker {
             gui.setItem(rows, 5, item3);
         }
 
-        gui.open(player, cPage);
+        Scheduler.get().runAt(player.getLocation(), () -> gui.open(player, cPage));
     }
 }

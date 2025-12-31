@@ -2,6 +2,7 @@ package com.artillexstudios.axvaults.guis;
 
 import com.artillexstudios.axapi.libs.boostedyaml.block.implementation.Section;
 import com.artillexstudios.axapi.reflection.ClassUtils;
+import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.ItemBuilder;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axvaults.vaults.Vault;
@@ -88,7 +89,7 @@ public class VaultSelector {
             gui.setItem(rows, 5, item3);
         }
 
-        gui.open(player, page);
+        Scheduler.get().runAt(player.getLocation(), () -> gui.open(player, page));
     }
 
     private void getItemOfVault(@NotNull Player player, int num, @NotNull PaginatedGui gui, Consumer<GuiItem> consumer) {

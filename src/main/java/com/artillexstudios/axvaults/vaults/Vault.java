@@ -55,9 +55,8 @@ public class Vault implements InventoryHolder {
                 if (items[i] == null) continue;
                 HashMap<Integer, ItemStack> remaining = storage.addItem(items[i]);
                 if (player != null) {
-                    Scheduler.get().runAt(player.getLocation(), () -> {
-                        remaining.forEach((k, v) -> player.getLocation().getWorld().dropItem(player.getLocation(), v));
-                    });
+                    Scheduler.get().runAt(player.getLocation(), () -> remaining.forEach((k, v) ->
+                          player.getLocation().getWorld().dropItem(player.getLocation(), v)));
                 }
             }
             return;
@@ -123,7 +122,8 @@ public class Vault implements InventoryHolder {
         if (vaultPlayer.getRows() != storage.getSize()) {
             reload();
         }
-        player.openInventory(storage);
+
+        Scheduler.get().runAt(player.getLocation(), () -> player.openInventory(storage));
         SoundUtils.playSound(player, MESSAGES.getString("sounds.open"));
         lastOpen = System.currentTimeMillis();
         // todo: on close reopen selector (only when it was used)
