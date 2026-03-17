@@ -59,6 +59,7 @@ public class Vault implements InventoryHolder {
                           player.getLocation().getWorld().dropItem(player.getLocation(), v)));
                 }
             }
+            changed.set(true);
             return;
         }
         storage.setContents(items);
