@@ -3,6 +3,7 @@ package com.artillexstudios.axvaults.guis;
 import com.artillexstudios.axapi.libs.boostedyaml.block.implementation.Section;
 import com.artillexstudios.axapi.reflection.ClassUtils;
 import com.artillexstudios.axapi.scheduler.Scheduler;
+import com.artillexstudios.axapi.utils.Cooldown;
 import com.artillexstudios.axapi.utils.ItemBuilder;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axvaults.utils.SoundUtils;
@@ -25,6 +26,7 @@ import static com.artillexstudios.axvaults.AxVaults.CONFIG;
 import static com.artillexstudios.axvaults.AxVaults.MESSAGES;
 
 public class ItemPicker {
+    private static final Cooldown<Player> cooldown = Cooldown.createSynchronized();
     private final Player player;
     private final VaultPlayer vaultPlayer;
 
@@ -67,13 +69,15 @@ public class ItemPicker {
 
             final GuiItem guiItem = new GuiItem(it);
             guiItem.setAction(event -> {
+                if (getOrAddCooldown((Player) event.getWhoClicked())) return;
                 if (vault.getIcon().equals(material)) vault.setIcon(null);
                 else vault.setIcon(material);
                 SoundUtils.playSound(player, MESSAGES.getString("sounds.select-icon"));
-                if (CONFIG.getBoolean("selector-stay-open", true))
+                if (CONFIG.getBoolean("selector-stay-open", true)) {
                     open(vault, oldPage, gui.getCurrentPageNum());
-                else
+                } else {
                     new VaultSelector(player, vaultPlayer).open(oldPage);
+                }
             });
             gui.addItem(guiItem);
         }
@@ -81,24 +85,42 @@ public class ItemPicker {
         final Section prev;
         if ((prev = MESSAGES.getSection("gui-items.previous-page")) != null) {
             final GuiItem item1 = new GuiItem(ItemBuilder.create(prev).get());
-            item1.setAction(event -> gui.previous());
+            item1.setAction(event -> {
+                if (getOrAddCooldown((Player) event.getWhoClicked())) return;
+                gui.previous();
+            });
             gui.setItem(rows, 3, item1);
         }
 
         final Section next;
         if ((next = MESSAGES.getSection("gui-items.next-page")) != null) {
             final GuiItem item2 = new GuiItem(ItemBuilder.create(next).get());
-            item2.setAction(event -> gui.next());
+            item2.setAction(event -> {
+                if (getOrAddCooldown((Player) event.getWhoClicked())) return;
+                gui.next();
+            });
             gui.setItem(rows, 7, item2);
         }
 
         final Section back;
         if ((back = MESSAGES.getSection("gui-items.back")) != null) {
             final GuiItem item3 = new GuiItem(ItemBuilder.create(back).get());
-            item3.setAction(event -> new VaultSelector(player, vaultPlayer).open(oldPage));
+            item3.setAction(event -> {
+                if (getOrAddCooldown((Player) event.getWhoClicked())) return;
+                new VaultSelector(player, vaultPlayer).open(oldPage);
+            });
             gui.setItem(rows, 5, item3);
         }
 
         Scheduler.get().runAt(player.getLocation(), () -> gui.open(player, cPage));
+    }
+
+    private static boolean getOrAddCooldown(Player player) {
+        long cooldownMillis = CONFIG.getLong("gui-refresh-cooldown-milliseconds", 100);
+        if (cooldownMillis > 0L) {
+            if (cooldown.hasCooldown(player)) return true;
+            cooldown.addCooldown(player, cooldownMillis);
+        }
+        return false;
     }
 }
