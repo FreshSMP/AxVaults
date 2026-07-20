@@ -2,11 +2,11 @@ package com.artillexstudios.axvaults.guis;
 
 import com.artillexstudios.axapi.libs.boostedyaml.block.implementation.Section;
 import com.artillexstudios.axapi.reflection.ClassUtils;
-import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.Cooldown;
 import com.artillexstudios.axapi.utils.ItemBuilder;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axvaults.AxVaults;
+import com.artillexstudios.axvaults.utils.ThreadUtils;
 import com.artillexstudios.axvaults.vaults.Vault;
 import com.artillexstudios.axvaults.vaults.VaultPlayer;
 import dev.triumphteam.gui.guis.Gui;
@@ -101,7 +101,7 @@ public class VaultSelector {
             gui.setItem(rows, 5, item3);
         }
 
-        Scheduler.get().runAt(player.getLocation(), () -> gui.open(player, page));
+        ThreadUtils.runSync(player, () -> gui.open(player, page));
     }
 
     private CompletableFuture<GuiItem> getItemOfVault(@NotNull Player player, int num, @NotNull PaginatedGui gui) {

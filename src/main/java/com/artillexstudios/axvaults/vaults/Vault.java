@@ -1,11 +1,11 @@
 package com.artillexstudios.axvaults.vaults;
 
-import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.ContainerUtils;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axvaults.AxVaults;
 import com.artillexstudios.axvaults.hooks.HookManager;
 import com.artillexstudios.axvaults.utils.SoundUtils;
+import com.artillexstudios.axvaults.utils.ThreadUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -115,20 +115,22 @@ public class Vault implements InventoryHolder {
             return;
         }
 
-        changed.set(true);
-        // recalculate vault if the row count has changed
-        if (vaultPlayer.getRows() * 9 != storage.getSize()) {
-            reload();
-        }
+        ThreadUtils.runSync(player, () -> {
+            changed.set(true);
+            // recalculate vault if the row count has changed
+            if (vaultPlayer.getRows() * 9 != storage.getSize()) {
+                reload();
+            }
 
-        // give back overflow items that couldn't fit in the vault
-        if (!overflow.isEmpty()) {
-            dropOverFlow(player);
-        }
+            // give back overflow items that couldn't fit in the vault
+            if (!overflow.isEmpty()) {
+                dropOverFlow(player);
+            }
 
-        Scheduler.get().runAt(player.getLocation(), () -> player.openInventory(storage));
-        SoundUtils.playSound(player, MESSAGES.getString("sounds.open"));
-        lastOpen = System.currentTimeMillis();
+            player.openInventory(storage);
+            SoundUtils.playSound(player, MESSAGES.getString("sounds.open"));
+            lastOpen = System.currentTimeMillis();
+        });
     }
 
     private void dropOverFlow(@NotNull Player player) {
