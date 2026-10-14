@@ -16,7 +16,7 @@ public enum Libraries {
 
     HIKARICP("com{}zaxxer:HikariCP:7.1.0", relocation("com{}zaxxer{}hikari", "com.artillexstudios.axvaults.libs.hikari")),
 
-    SQLITE_JDBC("org{}xerial:sqlite-jdbc:3.49.1.0"),
+    SQLITE_JDBC("org{}xerial:sqlite-jdbc:3.53.2.0"),
 
     H2_JDBC("com{}h2database:h2:2.1.214"),
 
